@@ -90,3 +90,14 @@ For a user or organization site instead of a project site, set it to:
 ```ts
 export const githubPagesBasePath = '/'
 ```
+
+For routing, this project uses `HashRouter` instead of `BrowserRouter`.
+That is the simplest and most reliable GitHub Pages setup for a frontend portfolio app because deep links and refreshes continue to work without server-side rewrite rules.
+
+Example deployed URLs will look like:
+
+```text
+https://yourusername.github.io/Construction-Project-Tracker/#/projects/p-101
+```
+
+Because of that router choice, a custom `public/404.html` fallback is not required for route compatibility.
