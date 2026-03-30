@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-main: #f2f5f8;
+  --bg-accent: #e5edf3;
+  --surface: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #475569;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  font-family: 'Barlow', 'Trebuchet MS', 'Tahoma', sans-serif;
+  color: var(--text-main);
+  background:
+    radial-gradient(circle at 10% 10%, rgba(148, 163, 184, 0.16) 0%, transparent 45%),
+    radial-gradient(circle at 90% 80%, rgba(56, 189, 248, 0.09) 0%, transparent 40%),
+    linear-gradient(180deg, var(--bg-accent) 0%, var(--bg-main) 45%, #f7fafc 100%);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+code {
+  font-family: 'IBM Plex Mono', 'Consolas', monospace;
+}
