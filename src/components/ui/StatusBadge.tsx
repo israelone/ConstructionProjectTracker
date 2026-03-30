@@ -24,7 +24,7 @@ const toneClassMap: Record<StatusBadgeProps['tone'], string> = {
 
 export const StatusBadge = ({ label, tone }: StatusBadgeProps) => (
   <span
-    className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${toneClassMap[tone]}`}
+    className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] ring-1 ring-inset ${toneClassMap[tone]}`}
   >
     {label}
   </span>

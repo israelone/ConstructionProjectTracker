@@ -42,6 +42,7 @@ export interface Project {
   id: string
   name: string
   client: string
+  marketSector: 'municipal' | 'healthcare' | 'infrastructure' | 'education' | 'industrial' | 'private_development'
   location: string
   address: string
   projectManager: string
@@ -49,10 +50,15 @@ export interface Project {
   status: ProjectStatus
   priority: Priority
   budgetStatus: BudgetStatus
+  currentPhase: string
   percentComplete: number
   startDate: string
   estimatedCompletionDate: string
   contractValue: number
+  costVariance: number
+  scheduleVarianceDays: number
+  workforceOnsite: number
+  billingPending: number
   health: 'on_track' | 'watch' | 'at_risk'
   pendingInspections: number
   notes: string[]
@@ -108,4 +114,11 @@ export interface ScheduleItem {
   date: string
   type: 'milestone' | 'inspection' | 'deadline'
   status: 'upcoming' | 'overdue' | 'completed'
+}
+
+export interface ProjectAiBrief {
+  headline: string
+  summary: string
+  watchItems: string[]
+  recommendedActions: string[]
 }

@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Card } from '../components/ui/Card'
+import { DataTable } from '../components/ui/DataTable'
+import { FilterField } from '../components/ui/FilterField'
 import { PageHeader } from '../components/ui/PageHeader'
 import { StatusBadge } from '../components/ui/StatusBadge'
 import { issues, projects } from '../data/mockData'
@@ -30,17 +32,16 @@ export const IssuesRisksPage = () => {
     <div>
       <PageHeader
         title="Issues / Risks"
-        description="Track blockers, severity, mitigation actions, and ownership across all projects."
+        description="Monitor active blockers, mitigation plans, and risk ownership with a denser operations-style review table."
       />
 
       <Card className="mb-6">
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <label className="space-y-1">
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Severity</span>
+          <FilterField label="Severity">
             <select
               value={severityFilter}
               onChange={(event) => setSeverityFilter(event.target.value as Severity | 'all')}
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+              className="app-select"
             >
               <option value="all">All severities</option>
               <option value="low">Low</option>
@@ -48,15 +49,10 @@ export const IssuesRisksPage = () => {
               <option value="high">High</option>
               <option value="critical">Critical</option>
             </select>
-          </label>
+          </FilterField>
 
-          <label className="space-y-1">
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Project</span>
-            <select
-              value={projectFilter}
-              onChange={(event) => setProjectFilter(event.target.value)}
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
-            >
+          <FilterField label="Project">
+            <select value={projectFilter} onChange={(event) => setProjectFilter(event.target.value)} className="app-select">
               <option value="all">All projects</option>
               {projects.map((project) => (
                 <option key={project.id} value={project.id}>
@@ -64,14 +60,13 @@ export const IssuesRisksPage = () => {
                 </option>
               ))}
             </select>
-          </label>
+          </FilterField>
 
-          <label className="space-y-1">
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Status</span>
+          <FilterField label="Status">
             <select
               value={statusFilter}
               onChange={(event) => setStatusFilter(event.target.value as IssueStatus | 'all')}
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+              className="app-select"
             >
               <option value="all">All statuses</option>
               <option value="open">Open</option>
@@ -79,14 +74,13 @@ export const IssuesRisksPage = () => {
               <option value="mitigating">Mitigating</option>
               <option value="resolved">Resolved</option>
             </select>
-          </label>
+          </FilterField>
 
-          <label className="space-y-1">
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Category</span>
+          <FilterField label="Category">
             <select
               value={categoryFilter}
               onChange={(event) => setCategoryFilter(event.target.value as IssueCategory | 'all')}
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+              className="app-select"
             >
               <option value="all">All categories</option>
               <option value="weather_delay">Weather Delay</option>
@@ -97,47 +91,27 @@ export const IssuesRisksPage = () => {
               <option value="equipment_issue">Equipment Issue</option>
               <option value="inspection_failed">Inspection Failed</option>
             </select>
-          </label>
+          </FilterField>
         </div>
       </Card>
 
-      <Card>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200 text-sm">
-            <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-slate-500">
-                <th className="px-2 pb-3">Title</th>
-                <th className="px-2 pb-3">Project</th>
-                <th className="px-2 pb-3">Severity</th>
-                <th className="px-2 pb-3">Category</th>
-                <th className="px-2 pb-3">Owner</th>
-                <th className="px-2 pb-3">Date Opened</th>
-                <th className="px-2 pb-3">Status</th>
-                <th className="px-2 pb-3">Mitigation</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filteredIssues.map((issue) => (
-                <tr key={issue.id} className="align-top">
-                  <td className="px-2 py-3 font-semibold text-slate-900">{issue.title}</td>
-                  <td className="px-2 py-3 text-slate-700">
-                    {projects.find((project) => project.id === issue.projectId)?.name}
-                  </td>
-                  <td className="px-2 py-3">
-                    <StatusBadge label={readable(issue.severity)} tone={severityTone(issue.severity)} />
-                  </td>
-                  <td className="px-2 py-3 text-slate-700">{readable(issue.category)}</td>
-                  <td className="px-2 py-3 text-slate-700">{issue.owner}</td>
-                  <td className="px-2 py-3 text-slate-700">{prettyDate(issue.dateOpened)}</td>
-                  <td className="px-2 py-3">
-                    <StatusBadge label={readable(issue.status)} tone={issueStatusTone(issue.status)} />
-                  </td>
-                  <td className="px-2 py-3 text-slate-700">{issue.mitigationNote}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <Card subtitle={`${filteredIssues.length} active records in view`}>
+        <DataTable columns={['Issue', 'Project', 'Severity', 'Owner', 'Opened', 'Status', 'Mitigation']}>
+          {filteredIssues.map((issue) => (
+            <tr key={issue.id}>
+              <td className="min-w-[240px]">
+                <p className="font-semibold text-slate-900">{issue.title}</p>
+                <p className="mt-1 text-xs uppercase tracking-[0.12em] text-slate-500">{readable(issue.category)}</p>
+              </td>
+              <td className="min-w-[220px] text-slate-700">{projects.find((project) => project.id === issue.projectId)?.name}</td>
+              <td><StatusBadge label={readable(issue.severity)} tone={severityTone(issue.severity)} /></td>
+              <td className="text-slate-700">{issue.owner}</td>
+              <td className="text-slate-700">{prettyDate(issue.dateOpened)}</td>
+              <td><StatusBadge label={readable(issue.status)} tone={issueStatusTone(issue.status)} /></td>
+              <td className="min-w-[280px] text-slate-700">{issue.mitigationNote}</td>
+            </tr>
+          ))}
+        </DataTable>
       </Card>
     </div>
   )

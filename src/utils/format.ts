@@ -7,6 +7,14 @@ export const currency = (value: number) =>
     maximumFractionDigits: 0,
   }).format(value)
 
+export const compactCurrency = (value: number) =>
+  new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  }).format(value)
+
 export const prettyDate = (value: string) =>
   new Date(`${value}T00:00:00`).toLocaleDateString('en-US', {
     month: 'short',
@@ -19,6 +27,22 @@ export const daysUntil = (value: string) => {
   const target = new Date(`${value}T00:00:00`)
   const diff = target.getTime() - now.getTime()
   return Math.ceil(diff / (1000 * 60 * 60 * 24))
+}
+
+export const signedDays = (value: number) => {
+  if (value === 0) {
+    return 'On plan'
+  }
+
+  return `${value > 0 ? '+' : ''}${value}d`
+}
+
+export const signedPercent = (value: number) => {
+  if (value === 0) {
+    return '0.0%'
+  }
+
+  return `${value > 0 ? '+' : ''}${value.toFixed(1)}%`
 }
 
 export const labelize = (value: string) =>

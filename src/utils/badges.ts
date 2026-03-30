@@ -9,6 +9,19 @@ import type {
 } from '../types'
 import { labelize } from './format'
 
+export const healthTone = (health: 'on_track' | 'watch' | 'at_risk') => {
+  switch (health) {
+    case 'on_track':
+      return 'emerald'
+    case 'watch':
+      return 'amber'
+    case 'at_risk':
+      return 'rose'
+    default:
+      return 'slate'
+  }
+}
+
 export const projectStatusTone = (status: ProjectStatus) => {
   switch (status) {
     case 'planning':

@@ -5,15 +5,25 @@
 @tailwind utilities;
 
 :root {
-  --bg-main: #f2f5f8;
-  --bg-accent: #e5edf3;
+  --bg-main: #edf2f7;
+  --bg-accent: #dbe5ec;
   --surface: #ffffff;
+  --surface-muted: #f8fafc;
+  --surface-strong: #e2e8f0;
   --text-main: #0f172a;
   --text-muted: #475569;
+  --line: rgba(148, 163, 184, 0.26);
+  --navy: #162534;
+  --navy-soft: #23374b;
+  --accent: #c8872f;
 }
 
 * {
   box-sizing: border-box;
+}
+
+html {
+  font-size: 15px;
 }
 
 body {
@@ -21,17 +31,72 @@ body {
   min-width: 320px;
   min-height: 100vh;
   font-family: 'Barlow', 'Trebuchet MS', 'Tahoma', sans-serif;
+  line-height: 1.45;
   color: var(--text-main);
   background:
-    radial-gradient(circle at 10% 10%, rgba(148, 163, 184, 0.16) 0%, transparent 45%),
-    radial-gradient(circle at 90% 80%, rgba(56, 189, 248, 0.09) 0%, transparent 40%),
-    linear-gradient(180deg, var(--bg-accent) 0%, var(--bg-main) 45%, #f7fafc 100%);
+    radial-gradient(circle at top left, rgba(200, 135, 47, 0.12) 0%, transparent 26%),
+    radial-gradient(circle at 85% 18%, rgba(35, 55, 75, 0.12) 0%, transparent 34%),
+    linear-gradient(180deg, var(--bg-accent) 0%, var(--bg-main) 42%, #f5f7fa 100%);
 }
 
 #root {
   min-height: 100vh;
 }
 
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
 code {
   font-family: 'IBM Plex Mono', 'Consolas', monospace;
+}
+
+::selection {
+  background: rgba(200, 135, 47, 0.18);
+}
+
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    letter-spacing: -0.02em;
+  }
+}
+
+@layer components {
+  .app-input {
+    @apply w-full rounded-xl border border-slate-300/90 bg-white px-3.5 py-2.5 text-sm text-slate-800 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-sky-100;
+  }
+
+  .app-select {
+    @apply app-input appearance-none;
+  }
+
+  .data-table {
+    @apply text-sm;
+  }
+
+  .data-table thead th {
+    @apply border-b border-slate-200 bg-slate-50/80 px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500;
+  }
+
+  .data-table tbody td {
+    @apply border-b border-slate-100 px-3 py-3.5 align-top text-slate-700;
+  }
+
+  .data-table tbody tr:last-child td {
+    @apply border-b-0;
+  }
+
+  .data-table tbody tr:hover td {
+    @apply bg-slate-50/70;
+  }
+
+  .eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500;
+  }
 }

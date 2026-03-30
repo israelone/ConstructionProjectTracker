@@ -1,13 +1,15 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Card } from '../components/ui/Card'
+import { DataTable } from '../components/ui/DataTable'
+import { FilterField } from '../components/ui/FilterField'
 import { PageHeader } from '../components/ui/PageHeader'
 import { ProgressBar } from '../components/ui/ProgressBar'
 import { StatusBadge } from '../components/ui/StatusBadge'
 import { projects } from '../data/mockData'
 import type { Priority, ProjectStatus } from '../types'
-import { budgetTone, priorityTone, projectStatusTone } from '../utils/badges'
-import { budgetStatusLabel, labelize, prettyDate, priorityWeight } from '../utils/format'
+import { budgetTone, healthTone, priorityTone, projectStatusTone } from '../utils/badges'
+import { budgetStatusLabel, currency, labelize, prettyDate, priorityWeight, signedDays, signedPercent } from '../utils/format'
 
 type SortBy = 'estimatedCompletionDate' | 'percentComplete'
 
@@ -22,7 +24,8 @@ export const ProjectsPage = () => {
       .filter((project) => {
         const matchesSearch =
           project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          project.client.toLowerCase().includes(searchTerm.toLowerCase())
+          project.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          project.location.toLowerCase().includes(searchTerm.toLowerCase())
         const matchesStatus = statusFilter === 'all' || project.status === statusFilter
         const matchesPriority = priorityFilter === 'all' || project.priority === priorityFilter
 
@@ -45,27 +48,25 @@ export const ProjectsPage = () => {
     <div>
       <PageHeader
         title="Projects List"
-        description="Track active and planned construction jobs with status, budget, and completion details."
+        description="Track active and planned jobs with clearer portfolio context around phase, financial pressure, staffing, and completion."
       />
 
       <Card className="mb-6">
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <label className="space-y-1">
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Search</span>
+          <FilterField label="Search">
             <input
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Project name or client"
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none ring-sky-500 focus:ring"
+              placeholder="Project, client, or location"
+              className="app-input"
             />
-          </label>
+          </FilterField>
 
-          <label className="space-y-1">
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Status</span>
+          <FilterField label="Status">
             <select
               value={statusFilter}
               onChange={(event) => setStatusFilter(event.target.value as ProjectStatus | 'all')}
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none ring-sky-500 focus:ring"
+              className="app-select"
             >
               <option value="all">All statuses</option>
               <option value="planning">Planning</option>
@@ -74,14 +75,13 @@ export const ProjectsPage = () => {
               <option value="on_hold">On Hold</option>
               <option value="completed">Completed</option>
             </select>
-          </label>
+          </FilterField>
 
-          <label className="space-y-1">
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Priority</span>
+          <FilterField label="Priority">
             <select
               value={priorityFilter}
               onChange={(event) => setPriorityFilter(event.target.value as Priority | 'all')}
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none ring-sky-500 focus:ring"
+              className="app-select"
             >
               <option value="all">All priorities</option>
               <option value="low">Low</option>
@@ -89,69 +89,65 @@ export const ProjectsPage = () => {
               <option value="high">High</option>
               <option value="critical">Critical</option>
             </select>
-          </label>
+          </FilterField>
 
-          <label className="space-y-1">
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Sort</span>
+          <FilterField label="Sort">
             <select
               value={sortBy}
               onChange={(event) => setSortBy(event.target.value as SortBy)}
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none ring-sky-500 focus:ring"
+              className="app-select"
             >
               <option value="estimatedCompletionDate">Completion Date</option>
               <option value="percentComplete">Percent Complete</option>
             </select>
-          </label>
+          </FilterField>
         </div>
       </Card>
 
-      <Card>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200 text-sm">
-            <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-slate-500">
-                <th className="px-2 pb-3">Project</th>
-                <th className="px-2 pb-3">Client</th>
-                <th className="px-2 pb-3">Location</th>
-                <th className="px-2 pb-3">PM</th>
-                <th className="px-2 pb-3">Status</th>
-                <th className="px-2 pb-3">Priority</th>
-                <th className="px-2 pb-3">Budget</th>
-                <th className="px-2 pb-3">Progress</th>
-                <th className="px-2 pb-3">Start</th>
-                <th className="px-2 pb-3">Estimated End</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filteredProjects.map((project) => (
-                <tr key={project.id} className="align-top">
-                  <td className="px-2 py-3">
-                    <Link to={`/projects/${project.id}`} className="font-semibold text-slate-900 hover:text-sky-700">
-                      {project.name}
-                    </Link>
-                  </td>
-                  <td className="px-2 py-3 text-slate-700">{project.client}</td>
-                  <td className="px-2 py-3 text-slate-700">{project.location}</td>
-                  <td className="px-2 py-3 text-slate-700">{project.projectManager}</td>
-                  <td className="px-2 py-3">
-                    <StatusBadge label={labelize(project.status)} tone={projectStatusTone(project.status)} />
-                  </td>
-                  <td className="px-2 py-3">
-                    <StatusBadge label={labelize(project.priority)} tone={priorityTone(project.priority)} />
-                  </td>
-                  <td className="px-2 py-3">
-                    <StatusBadge label={budgetStatusLabel[project.budgetStatus]} tone={budgetTone(project.budgetStatus)} />
-                  </td>
-                  <td className="px-2 py-3 min-w-40">
-                    <ProgressBar value={project.percentComplete} />
-                  </td>
-                  <td className="px-2 py-3 text-slate-700">{prettyDate(project.startDate)}</td>
-                  <td className="px-2 py-3 text-slate-700">{prettyDate(project.estimatedCompletionDate)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <Card subtitle={`${filteredProjects.length} projects shown`}>
+        <DataTable columns={['Project', 'Ops Snapshot', 'Status', 'Budget', 'Progress', 'Dates']}>
+          {filteredProjects.map((project) => (
+            <tr key={project.id}>
+              <td className="min-w-[260px]">
+                <Link to={`/projects/${project.id}`} className="font-semibold text-slate-900 hover:text-sky-700">
+                  {project.name}
+                </Link>
+                <p className="mt-1 text-sm text-slate-600">{project.client}</p>
+                <p className="mt-1 text-xs uppercase tracking-[0.12em] text-slate-500">
+                  {labelize(project.marketSector)} • {project.location}
+                </p>
+              </td>
+              <td className="min-w-[220px]">
+                <p className="font-semibold text-slate-900">{project.currentPhase}</p>
+                <p className="mt-1 text-sm text-slate-600">{project.projectManager} / {project.superintendent}</p>
+                <p className="mt-1 text-xs text-slate-500">{project.workforceOnsite} onsite • Billing {currency(project.billingPending)}</p>
+              </td>
+              <td>
+                <div className="space-y-2">
+                  <StatusBadge label={labelize(project.status)} tone={projectStatusTone(project.status)} />
+                  <StatusBadge label={labelize(project.priority)} tone={priorityTone(project.priority)} />
+                  <StatusBadge label={labelize(project.health)} tone={healthTone(project.health)} />
+                </div>
+              </td>
+              <td className="min-w-[150px]">
+                <StatusBadge label={budgetStatusLabel[project.budgetStatus]} tone={budgetTone(project.budgetStatus)} />
+                <p className={`mt-2 text-xs font-semibold ${project.costVariance > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
+                  Cost variance {signedPercent(project.costVariance)}
+                </p>
+                <p className={`mt-1 text-xs font-semibold ${project.scheduleVarianceDays > 0 ? 'text-amber-600' : 'text-emerald-600'}`}>
+                  Schedule {signedDays(project.scheduleVarianceDays)}
+                </p>
+              </td>
+              <td className="min-w-[180px]">
+                <ProgressBar value={project.percentComplete} />
+              </td>
+              <td className="min-w-[170px]">
+                <p className="text-sm text-slate-700">Start {prettyDate(project.startDate)}</p>
+                <p className="mt-1 text-sm font-semibold text-slate-900">End {prettyDate(project.estimatedCompletionDate)}</p>
+              </td>
+            </tr>
+          ))}
+        </DataTable>
       </Card>
     </div>
   )
