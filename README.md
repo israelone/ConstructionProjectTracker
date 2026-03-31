@@ -70,34 +70,3 @@ src/
 2. Start the dev server with `npm run dev`
 3. Create a production build with `npm run build`
 4. Preview the production build with `npm run preview`
-
-## GitHub Pages Base Path
-
-This project keeps the GitHub Pages base path in one place:
-
-- `site.config.ts`
-
-If the repository name changes later, update the exported value in `site.config.ts` to match the new repo name.
-
-Example:
-
-```ts
-export const githubPagesBasePath = '/my-new-repo-name/'
-```
-
-For a user or organization site instead of a project site, set it to:
-
-```ts
-export const githubPagesBasePath = '/'
-```
-
-For routing, this project uses `HashRouter` instead of `BrowserRouter`.
-That is the simplest and most reliable GitHub Pages setup for a frontend portfolio app because deep links and refreshes continue to work without server-side rewrite rules.
-
-Example deployed URLs will look like:
-
-```text
-https://yourusername.github.io/Construction-Project-Tracker/#/projects/p-101
-```
-
-Because of that router choice, a custom `public/404.html` fallback is not required for route compatibility.
